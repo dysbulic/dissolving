@@ -4074,107 +4074,107 @@ float snoise(vec3 v) {
                 dot(p2, x2), dot(p3, x3)));
 }
 `;let Fi=1;function jn(){return/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)}jn()&&(Fi=.7);const wn=document.getElementById("c"),$e=new hf,Er=new sn(75,wn.clientWidth/wn.clientHeight,.001,100);jn()?Er.position.set(0,8,18):Er.position.set(0,1,14);const Ad=new Pt(0);$e.background=Ad;const Tn=new l0({canvas:wn,antialias:!0});Tn.setPixelRatio(window.devicePixelRatio);Tn.setSize(wn.clientWidth*Fi,wn.clientHeight*Fi,!1);Tn.toneMapping=rl;Tn.outputColorSpace=He;const Ur=new Td(Tn),jl=new Qw($e,Er);let eE=jn()?.1:.25;const Pd=new wr(new Et(window.innerHeight*Fi,window.innerWidth*Fi),.5,eE,.2),Rd=new Jw,Ms=new Td(Tn),Yl=new Sd(new Ce({uniforms:{tDiffuse:{value:null},uBloomTexture:{value:Ur.renderTarget2.texture},uStrength:{value:jn()?6:8}},vertexShader:`
-        varying vec2 vUv;
+        varying vec2 vUv
         void main(){
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+            vUv = uv
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0)
         }
     `,fragmentShader:`
-        uniform sampler2D tDiffuse;
-        uniform sampler2D uBloomTexture;
-        uniform float uStrength;
-        varying vec2 vUv;
+        uniform sampler2D tDiffuse
+        uniform sampler2D uBloomTexture
+        uniform float uStrength
+        varying vec2 vUv
         void main(){
-            vec4 baseEffect = texture2D(tDiffuse,vUv);
-            vec4 bloomEffect = texture2D(uBloomTexture,vUv);
-            gl_FragColor =baseEffect + bloomEffect * uStrength;
+            vec4 baseEffect = texture2D(tDiffuse,vUv)
+            vec4 bloomEffect = texture2D(uBloomTexture,vUv)
+            gl_FragColor =baseEffect + bloomEffect * uStrength
         }
     `}));Ur.addPass(jl);Ur.addPass(Pd);Ur.renderToScreen=!1;Ms.addPass(jl);Ms.addPass(Yl);Ms.addPass(Rd);const nE=new Uw(Er,wn),iE=new uh(256),rE=new ch(.1,500,iE);let Dd,ro;function sE(n,t){return[n+"posx"+t,n+"negx"+t,n+"posy"+t,n+"negy"+t,n+"posz"+t,n+"negz"+t]}Dd=sE("/cubeMap2/",".png");async function oE(){ro=await new wf().loadAsync(Dd),$e.background=ro,$e.environment=ro,rE.update(Tn,$e),document.body.classList.remove("loading")}oE();let yr=jn()?90:140,aE=jn()?18:32;const lE=new ml(4.5,yr,yr),cE=new Kw(3,aE),uE=new _l(3,1.5,yr,yr),hE=new vl(2.5,.8,yr,yr);let dE=["TorusKnot","Tea Pot","Sphere","Torus"],as=[hE,cE,lE,uE],Ld;Ld=new Ef().load("/particle.png");let Gn,fn;fn=as[0];const Kn=new vf;Kn.color=new Pt(6513507);Kn.metalness=2;Kn.roughness=0;Kn.side=xn;const De={uEdgeColor:{value:new Pt(5086207)},uFreq:{value:.25},uAmp:{value:16},uProgress:{value:-7},uEdge:{value:.8}};function pE(n,t){const e=Object.keys(t);for(let i=0;i<e.length;i++){const r=e[i];n.uniforms[r]=t[r]}}function fE(n){n.vertexShader=n.vertexShader.replace("#include <common>",`#include <common>
-        varying vec3 vPos;
+        varying vec3 vPos
     `),n.vertexShader=n.vertexShader.replace("#include <begin_vertex>",`#include <begin_vertex>
-        vPos = position;
+        vPos = position
     `),n.fragmentShader=n.fragmentShader.replace("#include <common>",`#include <common>
-        varying vec3 vPos;
+        varying vec3 vPos
 
-        uniform float uFreq;
-        uniform float uAmp;
-        uniform float uProgress;
-        uniform float uEdge;
-        uniform vec3 uEdgeColor;
+        uniform float uFreq
+        uniform float uAmp
+        uniform float uProgress
+        uniform float uEdge
+        uniform vec3 uEdgeColor
 
         ${Cd}
     `),n.fragmentShader=n.fragmentShader.replace("#include <dithering_fragment>",`#include <dithering_fragment>
 
-        float noise = snoise(vPos * uFreq) * uAmp; // calculate snoise in fragment shader for smooth dissolve edges
+        float noise = snoise(vPos * uFreq) * uAmp // calculate snoise in fragment shader for smooth dissolve edges
 
-        if(noise < uProgress) discard; // discard any fragment where noise is lower than progress
+        if(noise < uProgress) discard // discard any fragment where noise is lower than progress
 
-        float edgeWidth = uProgress + uEdge;
+        float edgeWidth = uProgress + uEdge
 
         if(noise > uProgress && noise < edgeWidth){
-            gl_FragColor = vec4(vec3(uEdgeColor),noise); // colors the edge
+            gl_FragColor = vec4(vec3(uEdgeColor),noise) // colors the edge
         }else{
-            gl_FragColor = vec4(gl_FragColor.xyz,1.0);
+            gl_FragColor = vec4(gl_FragColor.xyz,1.0)
         }
     `)}Kn.onBeforeCompile=n=>{pE(n,De),fE(n)};Gn=new on(fn,Kn);$e.add(Gn);let ui,Vi=new Ce;Vi.transparent=!0;Vi.blending=so;let yi=fn.attributes.position.count,Yr,Si,ze,Nn,Kr,$r,xe={particleSpeedFactor:.02,velocityFactor:{x:2.5,y:2},waveAmplitude:0};function Ud(n){yi=n.attributes.position.count,Yr=new Float32Array(yi),Si=new Float32Array(n.getAttribute("position").array),ze=new Float32Array(n.getAttribute("position").array),Nn=new Float32Array(yi*3),Kr=new Float32Array(yi),$r=new Float32Array(yi);for(let t=0;t<yi;t++){let e=t*3+0,i=t*3+1,r=t*3+2;Yr[t]=Math.random()*5.5+1.5,Nn[e]=Math.random()*.5+.5,Nn[i]=Math.random()*.5+.5,Nn[r]=Math.random()*.1,Kr[t]=.001,$r[t]=Math.random()*Math.PI*2}n.setAttribute("aOffset",new le(Yr,1)),n.setAttribute("aCurrentPos",new le(ze,3)),n.setAttribute("aVelocity",new le(Nn,3)),n.setAttribute("aDist",new le(Kr,1)),n.setAttribute("aAngle",new le($r,1))}function mE(n){const t=ze[n*3+0],e=ze[n*3+1];let i=Math.sin(e*2)*(.8+xe.waveAmplitude),r=Math.sin(t*2)*(.6+xe.waveAmplitude),s=Math.sin(e*5)*(.2+xe.waveAmplitude),o=Math.sin(t*1)*(.9+xe.waveAmplitude),a=Math.sin(e*8)*(.8+xe.waveAmplitude),l=Math.sin(t*5)*(.6+xe.waveAmplitude),c=Math.sin(e*3)*(.8+xe.waveAmplitude),u=Math.sin(t*7)*(.6+xe.waveAmplitude),d=i+s+a+c,p=r+o+l+u;return{xwave:d,ywave:p}}function _E(n){let t=Nn[n*3+0],e=Nn[n*3+1],i=Nn[n*3+2];t*=xe.velocityFactor.x,e*=xe.velocityFactor.y;let{xwave:r,ywave:s}=mE(n);return t+=r,e+=s,t*=Math.abs(xe.particleSpeedFactor),e*=Math.abs(xe.particleSpeedFactor),i*=Math.abs(xe.particleSpeedFactor),{vx:t,vy:e,vz:i}}function vE(){for(let n=0;n<yi;n++){let t=n*3+0,e=n*3+1,i=n*3+2,{vx:r,vy:s,vz:o}=_E(n);ze[t]+=r,ze[e]+=s,ze[i]+=o;const a=new I(Si[t],Si[e],Si[i]),l=new I(ze[t],ze[e],ze[i]),c=a.distanceTo(l);Kr[n]=c,$r[n]+=.01,c>Yr[n]&&(ze[t]=Si[t],ze[e]=Si[e],ze[i]=Si[i])}fn.setAttribute("aOffset",new le(Yr,1)),fn.setAttribute("aCurrentPos",new le(ze,3)),fn.setAttribute("aVelocity",new le(Nn,3)),fn.setAttribute("aDist",new le(Kr,1)),fn.setAttribute("aAngle",new le($r,1))}Ud(fn);const ls={uTexture:{value:Ld},uPixelDensity:{value:Tn.getPixelRatio()},uProgress:De.uProgress,uEdge:De.uEdge,uAmp:De.uAmp,uFreq:De.uFreq,uBaseSize:{value:jn()?40:80},uColor:{value:new Pt(5086207)}};Vi.uniforms=ls;Vi.vertexShader=`
 
     ${Cd}
 
-    uniform float uPixelDensity;
-    uniform float uBaseSize;
-    uniform float uFreq;
-    uniform float uAmp;
-    uniform float uEdge;
-    uniform float uProgress;
+    uniform float uPixelDensity
+    uniform float uBaseSize
+    uniform float uFreq
+    uniform float uAmp
+    uniform float uEdge
+    uniform float uProgress
 
-    varying float vNoise;
-    varying float vAngle;
+    varying float vNoise
+    varying float vAngle
 
-    attribute vec3 aCurrentPos;
-    attribute float aDist;
-    attribute float aAngle;
+    attribute vec3 aCurrentPos
+    attribute float aDist
+    attribute float aAngle
 
     void main() {
-        vec3 pos = position;
+        vec3 pos = position
 
-        float noise = snoise(pos * uFreq) * uAmp;
-        vNoise =noise;
+        float noise = snoise(pos * uFreq) * uAmp
+        vNoise =noise
 
-        vAngle = aAngle;
+        vAngle = aAngle
 
         if( vNoise > uProgress-2.0 && vNoise < uProgress + uEdge+2.0){
-            pos = aCurrentPos;
+            pos = aCurrentPos
         }
 
-        vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
-        vec4 viewPosition = viewMatrix * modelPosition;
-        vec4 projectedPosition = projectionMatrix * viewPosition;
-        gl_Position = projectedPosition;
+        vec4 modelPosition = modelMatrix * vec4(pos, 1.0)
+        vec4 viewPosition = viewMatrix * modelPosition
+        vec4 projectedPosition = projectionMatrix * viewPosition
+        gl_Position = projectedPosition
 
-        float size = uBaseSize * uPixelDensity;
-        size = size  / (aDist + 1.0);
-        gl_PointSize = size / -viewPosition.z;
+        float size = uBaseSize * uPixelDensity
+        size = size  / (aDist + 1.0)
+        gl_PointSize = size / -viewPosition.z
 }
 `;Vi.fragmentShader=`
-    uniform vec3 uColor;
-    uniform float uEdge;
-    uniform float uProgress;
-    uniform sampler2D uTexture;
+    uniform vec3 uColor
+    uniform float uEdge
+    uniform float uProgress
+    uniform sampler2D uTexture
 
-    varying float vNoise;
-    varying float vAngle;
+    varying float vNoise
+    varying float vAngle
 
     void main(){
-        if( vNoise < uProgress ) discard;
-        if( vNoise > uProgress + uEdge) discard;
+        if( vNoise < uProgress ) discard
+        if( vNoise > uProgress + uEdge) discard
 
-        vec2 coord = gl_PointCoord;
-        coord = coord - 0.5; // get the coordinate from 0-1 ot -0.5 to 0.5
-        coord = coord * mat2(cos(vAngle),sin(vAngle) , -sin(vAngle), cos(vAngle)); // apply the rotation transformaion
-        coord = coord +  0.5; // reset the coordinate to 0-1  
+        vec2 coord = gl_PointCoord
+        coord = coord - 0.5 // get the coordinate from 0-1 ot -0.5 to 0.5
+        coord = coord * mat2(cos(vAngle),sin(vAngle) , -sin(vAngle), cos(vAngle)) // apply the rotation transformaion
+        coord = coord +  0.5 // reset the coordinate to 0-1
 
-        vec4 texture = texture2D(uTexture,coord);
+        vec4 texture = texture2D(uTexture,coord)
 
-        gl_FragColor = vec4(vec3(uColor.xyz * texture.xyz),1.0);
+        gl_FragColor = vec4(vec3(uColor.xyz * texture.xyz),1.0)
     }
-`;ui=new dh(fn,Vi);$e.add(ui);function gE(){const n=wn.clientWidth*Fi,t=wn.clientHeight*Fi,e=wn.width!==n||wn.height!==t;return e&&(Tn.setSize(n,t,!1),jl.setSize(n,t),Rd.setSize(n,t),Pd.setSize(n,t),Ur.setSize(n,t),Ms.setSize(n,t)),e}let Se={x:0,z:0,dissolveProgress:De.uProgress.value,edgeWidth:De.uEdge.value,amplitude:De.uAmp.value,frequency:De.uFreq.value,meshVisible:!0,meshColor:"#"+Kn.color.getHexString(),edgeColor:"#"+De.uEdgeColor.value.getHexString(),autoDissolve:!1,particleVisible:!0,particleBaseSize:ls.uBaseSize.value,particleColor:"#"+ls.uColor.value.getHexString(),particleSpeedFactor:xe.particleSpeedFactor,velocityFactor:xe.velocityFactor,waveAmplitude:xe.waveAmplitude,bloomStrength:Yl.uniforms.uStrength.value,rotationY:Gn.rotation.y};function xE(n,t,e){const i=[];for(let r=0;r<t.length;r++){const s=t[r],o=e[r];i.push({text:s,value:o})}return Nd.addBlade({view:"list",label:n,options:i,value:e[0]})}function Id(n){$e.remove(Gn),$e.remove(ui),fn=n,Gn=new on(n,Kn),Ud(n),ui=new dh(n,Vi),$e.add(Gn),$e.add(ui)}const Nd=new Dw,Kl=Nd.addFolder({title:"Controls",expanded:!1}),$l=Kl.addFolder({title:"Mesh",expanded:!1});let Zl=xE("Mesh",dE,as);Zl.on("change",n=>{Id(n.value)});$l.add(Zl);$l.addBinding(Se,"bloomStrength",{min:1,max:20,step:.01,label:"Bloom Strength"}).on("change",n=>{Yl.uniforms.uStrength.value=n.value});$l.addBinding(Se,"rotationY",{min:-(Math.PI*2),max:Math.PI*2,step:.01,label:"Rotation Y"}).on("change",n=>{ui.rotation.y=Gn.rotation.y=n.value});const pi=Kl.addFolder({title:"Dissolve Effect",expanded:!1});pi.addBinding(Se,"meshVisible",{label:"Visible"}).on("change",n=>{Gn.visible=n.value});let bE=pi.addBinding(Se,"dissolveProgress",{min:-20,max:20,step:1e-4,label:"Progress"}).on("change",n=>{De.uProgress.value=n.value});pi.addBinding(Se,"autoDissolve",{label:"Auto Animate"}).on("change",n=>{Se.autoDissolve=n.value});pi.addBinding(Se,"edgeWidth",{min:.1,max:8,step:.001,label:"Edge Width"}).on("change",n=>{De.uEdge.value=n.value});pi.addBinding(Se,"frequency",{min:.001,max:2,step:.001,label:"Frequency"}).on("change",n=>{De.uFreq.value=n.value});pi.addBinding(Se,"amplitude",{min:.1,max:20,step:.001,label:"Amplitude"}).on("change",n=>{De.uAmp.value=n.value});pi.addBinding(Se,"meshColor",{label:"Mesh Color"}).on("change",n=>{Kn.color.set(n.value)});pi.addBinding(Se,"edgeColor",{label:"Edge Color"}).on("change",n=>{De.uEdgeColor.value.set(n.value)});const Ir=Kl.addFolder({title:"Particle",expanded:!1});Ir.addBinding(Se,"particleVisible",{label:"Visible"}).on("change",n=>{ui.visible=n.value});Ir.addBinding(Se,"particleBaseSize",{min:10,max:100,step:.01,label:"Base size"}).on("change",n=>{ls.uBaseSize.value=n.value});Ir.addBinding(Se,"particleColor",{label:"Color"}).on("change",n=>{ls.uColor.value.set(n.value)});Ir.addBinding(Se,"particleSpeedFactor",{min:.001,max:.1,step:.001,label:"Speed"}).on("change",n=>{xe.particleSpeedFactor=n.value});Ir.addBinding(Se,"waveAmplitude",{min:0,max:5,step:.01,label:"Wave Amp"}).on("change",n=>{xe.waveAmplitude=n.value});Ir.addBinding(Se,"velocityFactor",{expanded:!0,picker:"inline",label:"Velocity Factor"}).on("change",n=>{xe.velocityFactor=n.value});let Wr=!0,la=0,Uu=as.length;function ME(){if(!Se.autoDissolve)return;let n=De.uProgress;Wr?n.value+=jn()?.12:.08:n.value-=jn()?.12:.08,n.value>14&&Wr&&(Wr=!1,la++,Id(as[la%Uu]),Zl.value=as[la%Uu]),n.value<-17&&!Wr&&(Wr=!0),bE.controller.value.setRawValue(n.value)}function wE(n){Gn.position.set(0,Math.sin(n*2)*.5,0),ui.position.set(0,Math.sin(n*2)*.5,0)}const EE=new _h;function Fd(){nE.update();let n=EE.getElapsedTime();if(vE(),wE(n),ME(),gE()){const t=Tn.domElement;Er.aspect=t.clientWidth/t.clientHeight,Er.updateProjectionMatrix()}$e.background=Ad,Ur.render(),$e.background=ro,Ms.render(),requestAnimationFrame(Fd)}requestAnimationFrame(Fd);window.addEventListener("orientationchange",()=>{location.reload()});
+`;ui=new dh(fn,Vi);$e.add(ui);function gE(){const n=wn.clientWidth*Fi,t=wn.clientHeight*Fi,e=wn.width!==n||wn.height!==t;return e&&(Tn.setSize(n,t,!1),jl.setSize(n,t),Rd.setSize(n,t),Pd.setSize(n,t),Ur.setSize(n,t),Ms.setSize(n,t)),e}let Se={x:0,z:0,dissolveProgress:De.uProgress.value,edgeWidth:De.uEdge.value,amplitude:De.uAmp.value,frequency:De.uFreq.value,meshVisible:!0,meshColor:"#"+Kn.color.getHexString(),edgeColor:"#"+De.uEdgeColor.value.getHexString(),autoDissolve:!0,particleVisible:!0,particleBaseSize:ls.uBaseSize.value,particleColor:"#"+ls.uColor.value.getHexString(),particleSpeedFactor:xe.particleSpeedFactor,velocityFactor:xe.velocityFactor,waveAmplitude:xe.waveAmplitude,bloomStrength:Yl.uniforms.uStrength.value,rotationY:Gn.rotation.y};function xE(n,t,e){const i=[];for(let r=0;r<t.length;r++){const s=t[r],o=e[r];i.push({text:s,value:o})}return Nd.addBlade({view:"list",label:n,options:i,value:e[0]})}function Id(n){$e.remove(Gn),$e.remove(ui),fn=n,Gn=new on(n,Kn),Ud(n),ui=new dh(n,Vi),$e.add(Gn),$e.add(ui)}const Nd=new Dw,Kl=Nd.addFolder({title:"Controls",expanded:!1}),$l=Kl.addFolder({title:"Mesh",expanded:!1});let Zl=xE("Mesh",dE,as);Zl.on("change",n=>{Id(n.value)});$l.add(Zl);$l.addBinding(Se,"bloomStrength",{min:1,max:20,step:.01,label:"Bloom Strength"}).on("change",n=>{Yl.uniforms.uStrength.value=n.value});$l.addBinding(Se,"rotationY",{min:-(Math.PI*2),max:Math.PI*2,step:.01,label:"Rotation Y"}).on("change",n=>{ui.rotation.y=Gn.rotation.y=n.value});const pi=Kl.addFolder({title:"Dissolve Effect",expanded:!1});pi.addBinding(Se,"meshVisible",{label:"Visible"}).on("change",n=>{Gn.visible=n.value});let bE=pi.addBinding(Se,"dissolveProgress",{min:-20,max:20,step:1e-4,label:"Progress"}).on("change",n=>{De.uProgress.value=n.value});pi.addBinding(Se,"autoDissolve",{label:"Auto Animate"}).on("change",n=>{Se.autoDissolve=n.value});pi.addBinding(Se,"edgeWidth",{min:.1,max:8,step:.001,label:"Edge Width"}).on("change",n=>{De.uEdge.value=n.value});pi.addBinding(Se,"frequency",{min:.001,max:2,step:.001,label:"Frequency"}).on("change",n=>{De.uFreq.value=n.value});pi.addBinding(Se,"amplitude",{min:.1,max:20,step:.001,label:"Amplitude"}).on("change",n=>{De.uAmp.value=n.value});pi.addBinding(Se,"meshColor",{label:"Mesh Color"}).on("change",n=>{Kn.color.set(n.value)});pi.addBinding(Se,"edgeColor",{label:"Edge Color"}).on("change",n=>{De.uEdgeColor.value.set(n.value)});const Ir=Kl.addFolder({title:"Particle",expanded:!1});Ir.addBinding(Se,"particleVisible",{label:"Visible"}).on("change",n=>{ui.visible=n.value});Ir.addBinding(Se,"particleBaseSize",{min:10,max:100,step:.01,label:"Base size"}).on("change",n=>{ls.uBaseSize.value=n.value});Ir.addBinding(Se,"particleColor",{label:"Color"}).on("change",n=>{ls.uColor.value.set(n.value)});Ir.addBinding(Se,"particleSpeedFactor",{min:.001,max:.1,step:.001,label:"Speed"}).on("change",n=>{xe.particleSpeedFactor=n.value});Ir.addBinding(Se,"waveAmplitude",{min:0,max:5,step:.01,label:"Wave Amp"}).on("change",n=>{xe.waveAmplitude=n.value});Ir.addBinding(Se,"velocityFactor",{expanded:!0,picker:"inline",label:"Velocity Factor"}).on("change",n=>{xe.velocityFactor=n.value});let Wr=!0,la=0,Uu=as.length;function ME(){if(!Se.autoDissolve)return;let n=De.uProgress;Wr?n.value+=jn()?.12:.08:n.value-=jn()?.12:.08,n.value>14&&Wr&&(Wr=!1,la++,Id(as[la%Uu]),Zl.value=as[la%Uu]),n.value<-17&&!Wr&&(Wr=!0),bE.controller.value.setRawValue(n.value)}function wE(n){Gn.position.set(0,Math.sin(n*2)*.5,0),ui.position.set(0,Math.sin(n*2)*.5,0)}const EE=new _h;function Fd(){nE.update();let n=EE.getElapsedTime();if(vE(),wE(n),ME(),gE()){const t=Tn.domElement;Er.aspect=t.clientWidth/t.clientHeight,Er.updateProjectionMatrix()}$e.background=Ad,Ur.render(),$e.background=ro,Ms.render(),requestAnimationFrame(Fd)}requestAnimationFrame(Fd);window.addEventListener("orientationchange",()=>{location.reload()});
