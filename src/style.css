@@ -27,8 +27,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Canvas */
-#c {
+canvas {
     width: 100vw;
     height: 100vh;
     display: block;

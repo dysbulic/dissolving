@@ -8,6 +8,7 @@ import { Pane, BladeApi } from 'tweakpane'
 import snoise from './lib/noise/snoise.glsl?raw'
 import './style.css'
 
+let dissolving = true
 let scale = 1
 function isMobile() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -21,11 +22,16 @@ const cam = new THREE.PerspectiveCamera(
   75, vas.clientWidth / vas.clientHeight, 0.001, 100,
 )
 
-const pos = isMobile() ? [0, 8, 18] : [0, 1, 14]
-cam.position.set.apply(globalThis, pos as [number, number, number])
+const pos = isMobile() ? [0, 8, 18] : [
+  0,
+  1,
+  14,
+]
+cam.position.set(...pos as [number, number, number])
+console.debug({ pos: cam.position })
 
-const blacǩ = new THREE.Color(0x000000)
-scene.background = blacǩ
+const black = new THREE.Color(0x000000)
+scene.background = black
 
 const rend = new THREE.WebGLRenderer({ canvas: vas, antialias: true })
 rend.setPixelRatio(window.devicePixelRatio)
@@ -52,7 +58,7 @@ const shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 
   vertexShader: `
     varying vec2 vUv;
-    void main(){
+    void main() {
       vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
     }
@@ -63,10 +69,10 @@ const shaderPass = new ShaderPass(new THREE.ShaderMaterial({
     uniform sampler2D uBloomTexture;
     uniform float uStrength;
     varying vec2 vUv;
-    void main(){
+    void main() {
       vec4 baseEffect = texture2D(tDiffuse,vUv);
       vec4 bloomEffect = texture2D(uBloomTexture,vUv);
-      gl_FragColor =baseEffect + bloomEffect * uStrength;
+      gl_FragColor = baseEffect + bloomEffect * uStrength;
     }
   `,
 }))
@@ -79,12 +85,10 @@ composers[1].addPass(renderPass)
 composers[1].addPass(shaderPass)
 composers[1].addPass(outPass)
 
-
 const controls = new OrbitControls(cam, vas)
 const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256)
 const cubeCamera = new THREE.CubeCamera(0.1, 500, cubeRenderTarget)
 let cubeTexture: THREE.CubeTexture
-
 
 function generateCubeUrls(prefix: string, postfix: string) {
   return [
@@ -108,16 +112,15 @@ async function loadTextures() {
 }
 loadTextures()
 
-const segments = [...(isMobile() ? [90, 18] : [140, 32])]
+const segments = isMobile() ? [90, 18] : [140, 32]
 
 const sphere = new THREE.SphereGeometry(4.5, segments[0], segments[0])
-const teaPot = new TeapotGeometry(3, segments[1])
+const teapot = new TeapotGeometry(3, segments[1])
 const torus = new THREE.TorusGeometry(3, 1.5, segments[0], segments[0])
 const torusKnot = new THREE.TorusKnotGeometry(2.5, 0.8, segments[0], segments[0])
-let geoNames = ['TorusKnot', 'Tea Pot', 'Sphere', 'Torus']
 let geometries = {
   'Torus Knot': torusKnot,
-  'Tea Pot': teaPot,
+  'Tea Pot': teapot,
   Sphere: sphere,
   Torus: torus,
 }
@@ -134,7 +137,6 @@ phyMat.color = new THREE.Color(0x636363)
 phyMat.metalness = 2.0
 phyMat.roughness = 0.0
 phyMat.side = THREE.DoubleSide
-
 
 const dissolveUniformData = {
   uEdgeColor: { value: new THREE.Color(0x4d9bff) },
@@ -228,25 +230,32 @@ function initParticles(meshGeo: THREE.BufferGeometry) {
   particleCount = meshGeo.attributes.position.count
   maxOffset = new Float32Array(particleCount)
   initPos = new Float32Array(meshGeo.getAttribute('position').array)
-  currPos = new Float32Array(meshGeo.getAttribute('position').array)
+  currPos = structuredClone(initPos)
   velocity = new Float32Array(particleCount * 3)
   distance = new Float32Array(particleCount)
   rotation = new Float32Array(particleCount)
 
-
   for(let i = 0; i < particleCount; i++) {
-    const x = i * 3 + 0
-    const y = i * 3 + 1
-    const z = i * 3 + 2
+    const idx = {
+      x: i * 3 + 0,
+      y: i * 3 + 1,
+      z: i * 3 + 2,
+    }
 
     maxOffset[i] = Math.random() * 5.5 + 1.5
 
-    velocity[x] = Math.random() * 0.5 + 0.5
-    velocity[y] = Math.random() * 0.5 + 0.5
-    velocity[z] = Math.random() * 0.1
+    velocity[idx.x] = Math.random() * 0.5 + 0.5
+    velocity[idx.y] = Math.random() * 0.5 + 0.5
+    velocity[idx.z] = Math.random() * 0.1
 
     distance[i] = 0.001
     rotation[i] = Math.random() * Math.PI * 2
+
+    if(!dissolving) {
+      currPos[idx.x] += maxOffset[i]
+      currPos[idx.y] += maxOffset[i]
+      currPos[idx.z] += maxOffset[i]
+    }
   }
 
   meshGeo.setAttribute('aOffset', new THREE.BufferAttribute(maxOffset, 1))
@@ -285,7 +294,6 @@ function waveOffset(idx: number) {
     x: acc.x + curr.x,
     y: acc.y + curr.y,
   }))
-
   return total
 }
 
@@ -311,34 +319,46 @@ function updateVelocity(idx: number) {
   return v
 }
 
+const minDistance = 0.001
 function updateParticles() {
   for(let i = 0; i < particleCount; i++) {
-    const x = i * 3 + 0
-    const y = i * 3 + 1
-    const z = i * 3 + 2
+    const idx = {
+      x: i * 3 + 0,
+      y: i * 3 + 1,
+      z: i * 3 + 2,
+    }
 
     const v = updateVelocity(i)
 
-    currPos[x] += v.x
-    currPos[y] += v.y
-    currPos[z] += v.z
+    const dirFactor = dissolving ? 1 : -1
+    currPos[idx.x] += dirFactor * v.x
+    currPos[idx.y] += dirFactor * v.y
+    currPos[idx.z] += dirFactor * v.z
 
-    const vec = [
-      new THREE.Vector3(...initPos.slice(x, 3)),
-      new THREE.Vector3(...currPos.slice(x, 3)),
-    ]
-    const dist = vec[0].distanceTo(vec[1])
+    const vec = {
+      init: new THREE.Vector3(...initPos.slice(idx.x, 3)),
+      current: new THREE.Vector3(...currPos.slice(idx.x, 3)),
+    }
+    const dist = vec.init.distanceTo(vec.current)
 
     distance[i] = dist
     rotation[i] += 0.01
 
-    if(dist > maxOffset[i]) {
-      currPos[x] = initPos[x]
-      currPos[y] = initPos[y]
-      currPos[z] = initPos[z]
+    if(i === 0) {
+      console.debug({ vec, dist })
+      console.debug({ dissolving })
+    }
+
+    if(dissolving && dist > maxOffset[i]) {
+      currPos[idx.x] = initPos[idx.x]
+      currPos[idx.y] = initPos[idx.y]
+      currPos[idx.z] = initPos[idx.z]
+    } else if(!dissolving && dist <= minDistance) {
+      currPos[idx.x] = initPos[idx.x] + maxOffset[i]
+      currPos[idx.y] = initPos[idx.y] + maxOffset[i]
+      currPos[idx.z] = initPos[idx.z] + maxOffset[i]
     }
   }
-
   meshGeo.setAttribute('aOffset', new THREE.BufferAttribute(maxOffset, 1))
   meshGeo.setAttribute('aCurrentPos', new THREE.BufferAttribute(currPos, 3))
   meshGeo.setAttribute('aVelocity', new THREE.BufferAttribute(velocity, 3))
@@ -620,7 +640,6 @@ particleFolder.addBinding(
   { expanded: true, picker: 'inline', label: 'Velocity Factor' }
 ).on('change', (obj) => { params.velocityFactor = obj.value })
 
-let dissolving = true
 let geoIdx = 0
 const meshes = Object.values(geometries)
 let geoLength = meshes.length
@@ -668,7 +687,7 @@ function animate() {
     cam.updateProjectionMatrix()
   }
 
-  scene.background = blacǩ
+  scene.background = black
   composers[0].render()
 
   scene.background = cubeTexture
